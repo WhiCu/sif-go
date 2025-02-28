@@ -1,0 +1,14 @@
+version: '3'
+
+silent: false
+
+tasks:
+  test:
+    desc: "Run tests"
+    cmds:
+      - go test -v -cover ./...
+  run:
+    desc: "Run app"
+    deps: [test]
+    cmds:
+      - go run cmd/main.go

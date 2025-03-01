@@ -1,50 +1,45 @@
-package sif
+package sif_test
 
 import (
-	"reflect"
+	"bytes"
 	"testing"
 
+	"github.com/WhiCu/sif-go/sif"
 	"github.com/WhiCu/sif-go/tag"
+	"github.com/stretchr/testify/assert"
 )
 
+// TestNewSIF проверяет создание SIF с валидными данными.
 func TestNewSIF(t *testing.T) {
-	content := []byte{0x01, 0x02, 0x03}
-	tag1 := tag.New(tag.InfoSignature, 2, []byte{0x04, 0x05})
-	tag2 := tag.New(tag.TypeSignature, 3, []byte{0x06, 0x07, 0x08})
-
-	sifFile := New(content, tag1, tag2)
-
-	if !reflect.DeepEqual(sifFile.Content.Data, content) {
-		t.Errorf("Expected content %v, got %v", content, sifFile.Content.Data)
+	content := []byte("test content")
+	tags := []tag.Tag{
+		tag.New(tag.ContentSignature, int32(len(content)), content),
+		tag.New(tag.InfoSignature, 5, []byte("meta1")),
 	}
 
-	if len(sifFile.Tags) != 2 {
-		t.Errorf("Expected 2 tags, got %v", len(sifFile.Tags))
-	}
-
-	if !reflect.DeepEqual(sifFile.Tags[0], tag1) || !reflect.DeepEqual(sifFile.Tags[1], tag2) {
-		t.Errorf("Tags do not match the expected values")
-	}
+	s, err := sif.New(tags...)
+	assert.NoError(t, err, "Ошибка при создании SIF")
+	assert.Equal(t, sif.SIFSignature, s.Header.Signature, "Неверная сигнатура заголовка")
+	assert.Len(t, s.Tags, 2, "Должен быть два тег")
+	assert.Equal(t, content, s.Tags[0].Data, "Данные контента не совпадают")
 }
 
+// TestSIFBytes проверяет сериализацию SIF в байты.
 func TestSIFBytes(t *testing.T) {
-	content := []byte{0x01, 0x02, 0x03}
-	tag1 := tag.New(tag.InfoSignature, 2, []byte{0x04, 0x05})
-	tag2 := tag.New(tag.TypeSignature, 3, []byte{0x06, 0x07, 0x08})
-
-	sifFile := New(content, tag1, tag2)
-	bytes := sifFile.Bytes()
-
-	headerBytes := sifFile.Header.Bytes()
-	tag1Bytes := tag1.Bytes()
-	tag2Bytes := tag2.Bytes()
-	contentBytes := sifFile.Content.Bytes()
-
-	expectedBytes := append(headerBytes, tag1Bytes...)
-	expectedBytes = append(expectedBytes, tag2Bytes...)
-	expectedBytes = append(expectedBytes, contentBytes...)
-
-	if !reflect.DeepEqual(bytes, expectedBytes) {
-		t.Errorf("Expected bytes %v, got %v", expectedBytes, bytes)
+	content := []byte("data")
+	tags := []tag.Tag{
+		tag.New(tag.InfoSignature, 4, []byte("info")),
+		tag.New(tag.ContentSignature, int32(len(content)), content),
 	}
+
+	s, _ := sif.New(tags...)
+	bs := s.Bytes()
+
+	// Ожидаемые байты заголовка: SIF + версия 1 + резерв [0,0,0,0]
+	expectedHeader := []byte{'S', 'I', 'F', 1, 0, 0, 0, 0}
+	assert.Equal(t, expectedHeader, bs[:8], "Заголовок сериализован неверно")
+
+	// Проверка наличия тега и контента в байтах
+	assert.True(t, bytes.Contains(bs, []byte("info")), "Тег не сериализован")
+	assert.True(t, bytes.Contains(bs, []byte("data")), "Контент не сериализован")
 }

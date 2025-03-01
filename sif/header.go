@@ -1,5 +1,9 @@
 package sif
 
+var (
+	SIFSignature = [3]byte{'S', 'I', 'F'}
+)
+
 // Header представляет структуру заголовка SIF-файла.
 type Header struct {
 	// Signature хранит идентификатор SIF в виде трех символов.
@@ -7,13 +11,13 @@ type Header struct {
 	// Version указывает на версию SIF.
 	Version byte
 	// Reserve зарезервировано для будущего использования.
-	Reserve [3]byte
+	Reserve [4]byte
 }
 
 // NewHeader создает новый заголовок с указанной версией и резервными данными.
-func NewHeader(v byte, r [3]byte) Header {
+func NewHeader(v byte, r [4]byte) Header {
 	return Header{
-		Signature: [3]byte{'S', 'I', 'F'},
+		Signature: SIFSignature,
 		Version:   v,
 		Reserve:   r,
 	}

@@ -1,42 +1,24 @@
-package sif
+package sif_test
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/WhiCu/sif-go/sif"
+	"github.com/stretchr/testify/assert"
 )
 
+// TestNewHeader проверяет создание заголовка.
 func TestNewHeader(t *testing.T) {
-	reserve := [3]byte{0x00, 0x01, 0x02}
-	header := NewHeader(1, reserve)
-
-	if header.Version != 1 {
-		t.Errorf("Expected version %v, got %v", 1, header.Version)
-	}
-
-	if !reflect.DeepEqual(header.Reserve, reserve) {
-		t.Errorf("Expected reserve %v, got %v", reserve, header.Reserve)
-	}
-
-	expectedSignature := [3]byte{'S', 'I', 'F'}
-	if !reflect.DeepEqual(header.Signature, expectedSignature) {
-		t.Errorf("Expected signature %v, got %v", expectedSignature, header.Signature)
-	}
+	h := sif.NewHeader(2, [4]byte{1, 2, 3, 4})
+	assert.Equal(t, sif.SIFSignature, h.Signature, "Неверная сигнатура")
+	assert.Equal(t, byte(2), h.Version, "Неверная версия")
+	assert.Equal(t, [4]byte{1, 2, 3, 4}, h.Reserve, "Резервные байты не совпадают")
 }
 
+// TestHeaderBytes проверяет сериализацию заголовка.
 func TestHeaderBytes(t *testing.T) {
-	reserve := [3]byte{0x00, 0x01, 0x02}
-	header := NewHeader(1, reserve)
-
-	bytes := header.Bytes()
-	expectedLength := 3 + 1 + 3 // 3 bytes signature + 1 byte version + 3 bytes reserve
-
-	if len(bytes) != expectedLength {
-		t.Errorf("Expected byte slice length %v, got %v", expectedLength, len(bytes))
-	}
-
-	expectedBytes := append([]byte{'S', 'I', 'F'}, 1)
-	expectedBytes = append(expectedBytes, reserve[:]...)
-	if !reflect.DeepEqual(bytes, expectedBytes) {
-		t.Errorf("Expected bytes %v, got %v", expectedBytes, bytes)
-	}
+	h := sif.NewHeader(1, [4]byte{})
+	bytes := h.Bytes()
+	expected := []byte{'S', 'I', 'F', 1, 0, 0, 0, 0}
+	assert.Equal(t, expected, bytes, "Сериализация заголовка неверна")
 }

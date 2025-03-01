@@ -1,13 +1,13 @@
 package tag
 
 // tagSingnature представляет тип подписи тега.
-type tagSingnature = byte
+type TagSingnature = byte
 
 const (
 	// ContentSignature используется для обозначения тега содержимого.
-	ContentSignature tagSingnature = 0
+	ContentSignature TagSingnature = 1 << iota
 	// InfoSignature используется для обозначения информационного тега.
-	InfoSignature tagSingnature = 1 << (iota - 1)
+	InfoSignature
 	// typeSignature используется для обозначения тега типа.
 	TypeSignature
 )
@@ -17,7 +17,7 @@ type Tag struct {
 	// Signature определяет тип тега (например, Content или Info).
 	Signature byte
 	// Length хранит длину содержимого в виде массива байтов.
-	Length [4]byte
+	Length int32
 	// Data содержит содержимое тега.
 	Data []byte
 }
@@ -26,7 +26,7 @@ type Tag struct {
 func New(signature byte, length int32, data []byte) Tag {
 	return Tag{
 		Signature: signature,
-		Length:    Int32ToBytes(length),
+		Length:    length,
 		Data:      data,
 	}
 }
@@ -35,7 +35,8 @@ func New(signature byte, length int32, data []byte) Tag {
 func (t Tag) Bytes() []byte {
 	data := make([]byte, 0)
 	data = append(data, t.Signature)
-	data = append(data, t.Length[:]...)
+	lenBytes := Int32ToBytes(t.Length)
+	data = append(data, lenBytes[:]...)
 	data = append(data, t.Data...)
 	return data
 }

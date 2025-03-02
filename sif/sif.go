@@ -10,25 +10,17 @@ type SIF struct {
 	Header
 
 	// Tags содержит список тегов SIF.
-	Tags []tag.Tag
+	Tags []*tag.Tag
 
 	// // Content представляет основное содержимое SIF.
 	// Content tag.Tag
 }
 
 // New создает новый SIF с указанным содержимым и тегами.
-func New(tags ...tag.Tag) (*SIF, error) {
-	// lc := len(Content)
-	// if lc > lenInt32 {
-	// 	return nil, ErrContentTooLong
-	// }
+func New(tags ...*tag.Tag) (*SIF, error) {
 	return &SIF{
 		Header: NewHeader(1, [4]byte{}),
-		// Content: tag.New(
-		// 	tag.ContentSignature,
-		// 	int32(lc),
-		// 	Content),
-		Tags: tags,
+		Tags:   tags,
 	}, nil
 }
 

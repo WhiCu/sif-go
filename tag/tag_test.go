@@ -11,7 +11,7 @@ import (
 func TestNewTag(t *testing.T) {
 	t.Run("ValidContentTag", func(t *testing.T) {
 		data := []byte{0x01, 0x02, 0x03}
-		tg := tag.New(tag.ContentSignature, int32(len(data)), data)
+		tg := tag.New(tag.ContentSignature, data)
 
 		assert.Equal(t, tag.ContentSignature, tg.Signature, "Неверная сигнатура")
 		assert.Equal(t, int32(3), tg.Length, "Неверная длина данных")
@@ -19,7 +19,7 @@ func TestNewTag(t *testing.T) {
 	})
 
 	t.Run("EmptyData", func(t *testing.T) {
-		tg := tag.New(tag.InfoSignature, 0, []byte{})
+		tg := tag.New(tag.InfoSignature, []byte{})
 		assert.Equal(t, int32(0), tg.Length, "Длина должна быть 0")
 		assert.Empty(t, tg.Data, "Данные должны быть пустыми")
 	})
@@ -29,14 +29,14 @@ func TestNewTag(t *testing.T) {
 func TestBytes(t *testing.T) {
 	t.Run("SimpleTag", func(t *testing.T) {
 		data := []byte{0xAA, 0xBB}
-		tg := tag.New(0x08, 2, data)
+		tg := tag.New(0x08, data)
 
 		expected := []byte{0x08, 0x00, 0x00, 0x00, 0x02, 0xAA, 0xBB}
 		assert.Equal(t, expected, tg.Bytes(), "Сериализация неверна")
 	})
 
 	t.Run("ZeroLength", func(t *testing.T) {
-		tg := tag.New(0x01, 0, []byte{})
+		tg := tag.New(0x01, []byte{})
 		expected := []byte{0x01, 0x00, 0x00, 0x00, 0x00}
 		assert.Equal(t, expected, tg.Bytes(), "Пустые данные не обработаны")
 	})

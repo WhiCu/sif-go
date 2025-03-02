@@ -12,13 +12,13 @@ var (
 	ErrInvalidHeader = errors.New("invalid header signature")
 )
 
-func (d *Decoder) DecodeTag() (t tag.Tag, err error) {
+func (d *Decoder) DecodeTag() (t *tag.Tag, err error) {
 	defer func() {
 		if err == io.ErrUnexpectedEOF {
 			err = ErrUnexpectedEOF
 		}
 	}()
-
+	t = new(tag.Tag)
 	// Read Signature (1 byte)
 	sig := make([]byte, 1)
 	if _, err = io.ReadFull(d.r, sig); err != nil {
@@ -43,8 +43,8 @@ func (d *Decoder) DecodeTag() (t tag.Tag, err error) {
 	return t, nil
 }
 
-func (d *Decoder) DecodeAll() ([]tag.Tag, error) {
-	var tags []tag.Tag
+func (d *Decoder) DecodeAll() ([]*tag.Tag, error) {
+	var tags []*tag.Tag
 
 	for {
 		t, err := d.DecodeTag()

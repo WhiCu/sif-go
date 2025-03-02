@@ -79,6 +79,7 @@ func TestUnmarshal(t *testing.T) {
 		var s sif.SIF
 		err := decode.Unmarshal(data, &s)
 		assert.NoError(t, err, "Unmarshal вернул ошибку")
+		assert.Equal(t, []byte("foo"), s.Tags[0].Data, "Контент не совпадает")
 		assert.Equal(t, []byte("data"), s.Tags[1].Data, "Контент не совпадает")
 	})
 

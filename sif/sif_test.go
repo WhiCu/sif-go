@@ -12,9 +12,9 @@ import (
 // TestNewSIF проверяет создание SIF с валидными данными.
 func TestNewSIF(t *testing.T) {
 	content := []byte("test content")
-	tags := []tag.Tag{
-		tag.New(tag.ContentSignature, int32(len(content)), content),
-		tag.New(tag.InfoSignature, 5, []byte("meta1")),
+	tags := []*tag.Tag{
+		tag.New(tag.ContentSignature, content),
+		tag.New(tag.InfoSignature, []byte("meta1")),
 	}
 
 	s, err := sif.New(tags...)
@@ -27,9 +27,9 @@ func TestNewSIF(t *testing.T) {
 // TestSIFBytes проверяет сериализацию SIF в байты.
 func TestSIFBytes(t *testing.T) {
 	content := []byte("data")
-	tags := []tag.Tag{
-		tag.New(tag.InfoSignature, 4, []byte("info")),
-		tag.New(tag.ContentSignature, int32(len(content)), content),
+	tags := []*tag.Tag{
+		tag.New(tag.InfoSignature, []byte("info")),
+		tag.New(tag.ContentSignature, content),
 	}
 
 	s, _ := sif.New(tags...)

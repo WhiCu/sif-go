@@ -3,7 +3,6 @@ package decode
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 
 	"github.com/WhiCu/sif-go/sif"
@@ -67,13 +66,11 @@ func (d *Decoder) Decode(s *sif.SIF) (err error) {
 	if err != nil {
 		return err
 	}
-	fmt.Println("1")
 	// Считываем данные
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(d.r); err != nil {
 		return err
 	}
-
 	// Считываем теги
 	decoder := decode.NewDecoder(buf)
 	tags, err := decoder.DecodeAll()

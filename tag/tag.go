@@ -1,5 +1,7 @@
 package tag
 
+import "math"
+
 // tagSingnature представляет тип подписи тега.
 type TagSingnature = byte
 
@@ -23,10 +25,14 @@ type Tag struct {
 }
 
 // New создает новый объект Tag с указанными параметрами.
-func New(signature byte, length int32, data []byte) Tag {
-	return Tag{
+func New(signature byte, data []byte) *Tag {
+	lc := len(data)
+	if lc > math.MaxInt32 {
+		panic("data too long") //TODO: добавить обработку
+	}
+	return &Tag{
 		Signature: signature,
-		Length:    length,
+		Length:    int32(lc),
 		Data:      data,
 	}
 }

@@ -56,7 +56,6 @@ type Tag struct {
 // Создание тега с данными "Hello"
 tag := tag.New(
     tag.ContentSignature, 
-    5, 
     []byte("Hello"),
 )
 ```
@@ -64,19 +63,17 @@ tag := tag.New(
 ```go title="Example"
 type SIF struct {
     Header  Header
-    Tags    []tag.Tag // Теги (метаданные)
+    Tags    []*tag.Tag // Теги (метаданные)
 }
 ```
 #### Пример создания SIF:
 ```go title="Example"
 content := tag.New(
     tag.ContentSignature, 
-    5, 
     []byte("Hello, SIF!"),
 )
 metaTag :=  tag.New(
     tag.ContentSignature, 
-    5, 
     []byte("Hello, SIF!"),
 )
 sifFile, err := sif.New(content, metaTag)
@@ -84,4 +81,37 @@ sifFile, err := sif.New(content, metaTag)
 Что будет в файле:
 ```bash
 83 73 70 1 0 0 0 0 1 0 0 0 5 72 101 108 108 111 44 32 83 73 70 33 1 0 0 0 5 72 101 108 108 111 44 32 83 73 70 33
+```
+
+## 🕶️ Предлогаемые стандартные тэги
+
+### Тэг Info
+```go title="Example"
+func NewInfoTag(data []byte) *tag.Tag {
+	return tag.New(
+		tag.InfoSignature,
+		data)
+}
+```
+
+### Тэг Content
+```go title="Example"
+func NewContentTag(data []byte) *tag.Tag {
+	return tag.New(
+		tag.ContentSignature,
+		data,
+	)
+}
+```
+
+### Тэг Number
+```go title="Example"
+func NewNumberTag(num int32) *tag.Tag {
+	numBytes := tag.Int32ToBytes(num)
+	return tag.New(
+		NumSigature,
+		numBytes[:],
+	)
+}
+
 ```

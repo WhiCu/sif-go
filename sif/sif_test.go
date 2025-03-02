@@ -17,8 +17,8 @@ func TestNewSIF(t *testing.T) {
 		tag.New(tag.InfoSignature, []byte("meta1")),
 	}
 
-	s, err := sif.New(tags...)
-	assert.NoError(t, err, "Ошибка при создании SIF")
+	s := sif.New(tags...)
+	// assert.NoError(t, err, "Ошибка при создании SIF")
 	assert.Equal(t, sif.SIFSignature, s.Header.Signature, "Неверная сигнатура заголовка")
 	assert.Len(t, s.Tags, 2, "Должен быть два тег")
 	assert.Equal(t, content, s.Tags[0].Data, "Данные контента не совпадают")
@@ -32,7 +32,7 @@ func TestSIFBytes(t *testing.T) {
 		tag.New(tag.ContentSignature, content),
 	}
 
-	s, _ := sif.New(tags...)
+	s := sif.New(tags...)
 	bs := s.Bytes()
 
 	// Ожидаемые байты заголовка: SIF + версия 1 + резерв [0,0,0,0]

@@ -25,10 +25,18 @@ type Tag struct {
 }
 
 // New создает новый объект Tag с указанными параметрами.
+//
+// signature - тип подписи тега. Он может быть одним из следующих:
+//  - ContentSignature (1) - тип подписи тега содержимого,
+//  - InfoSignature (2) - тип подписи информационного тега,
+//  - TypeSignature (4) - тип подписи тега типа.
+//
+// data - массив байтов, содержащий данные тега.
 func New(signature byte, data []byte) *Tag {
 	lc := len(data)
 	if lc > math.MaxInt32 {
-		panic("data too long") //TODO: добавить обработку
+		//TODO: добавить обработку
+		panic("data too long")
 	}
 	return &Tag{
 		Signature: signature,

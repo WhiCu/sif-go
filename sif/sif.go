@@ -17,11 +17,11 @@ type SIF struct {
 }
 
 // New создает новый SIF с указанным содержимым и тегами.
-func New(tags ...*tag.Tag) (*SIF, error) {
+func New(tags ...*tag.Tag) *SIF {
 	return &SIF{
 		Header: NewHeader(1, [4]byte{}),
 		Tags:   tags,
-	}, nil
+	}
 }
 
 // Bytes преобразует структуру SIF в массив байтов.

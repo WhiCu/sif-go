@@ -4,6 +4,13 @@ var (
 	SIFSignature = [3]byte{'S', 'I', 'F'}
 )
 
+const (
+	SignatureSize = 3
+	VersionSize = 1
+	ReserveSize = 4
+	HeaderSize = SignatureSize + VersionSize + ReserveSize
+)
+
 // Header представляет структуру заголовка SIF-файла.
 type Header struct {
 	// Signature хранит идентификатор SIF в виде трех символов.
@@ -25,9 +32,9 @@ func NewHeader(v byte, r [4]byte) Header {
 
 // Bytes преобразует заголовок в массив байтов.
 func (h Header) Bytes() []byte {
-	data := make([]byte, 8)
-	copy(data[0:3], h.Signature[:])
-	data[3] = h.Version
-	copy(data[4:8], h.Reserve[:])
+	data := make([]byte, HeaderSize)
+	copy(data[0:SignatureSize], h.Signature[:])
+	data[SignatureSize] = h.Version
+	copy(data[SignatureSize+VersionSize:], h.Reserve[:])
 	return data
 }

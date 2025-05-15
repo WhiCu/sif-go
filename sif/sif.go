@@ -24,19 +24,26 @@ func New(tags ...*tag.Tag) *SIF {
 	}
 }
 
+func (s *SIF) Add(t *tag.Tag) {
+	s.Tags = append(s.Tags, t)
+}
+
+
 // Bytes преобразует структуру SIF в массив байтов.
 func (s *SIF) Bytes() []byte {
-	data := make([]byte, 0)
-
-	// Добавление байтов заголовка.
-	data = append(data, s.Header.Bytes()...)
-
-	// Добавление байтов каждого тега.
+	headerBytes := s.Header.Bytes()
+	totalSize := len(headerBytes)
 	for _, t := range s.Tags {
-		data = append(data, t.Bytes()...)
+		totalSize += len(t.Bytes())
 	}
-
-	// // Добавление байтов основного содержимого.
-	// data = append(data, s.Content.Bytes()...)
+	data := make([]byte, totalSize)
+	offset := 0
+	copy(data[offset:], headerBytes)
+	offset += len(headerBytes)
+	for _, t := range s.Tags {
+		tagBytes := t.Bytes()
+		copy(data[offset:], tagBytes)
+		offset += len(tagBytes)
+	}
 	return data
 }

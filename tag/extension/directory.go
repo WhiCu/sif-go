@@ -4,9 +4,7 @@ import (
 	"github.com/WhiCu/sif-go/tag"
 )
 
-type DirectoryTag = tag.Tag
-
-func NewDirectoryTag(tags ...tag.Tag) (*DirectoryTag, error) {
+func NewDirectoryTag(tags ...tag.Tag) (*tag.Tag, error) {
 	totalSize := 0
 	for _, t := range tags {
 		totalSize += len(t.Bytes())

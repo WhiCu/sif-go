@@ -1,0 +1,16 @@
+mode: set
+github.com/WhiCu/sif-go/tag/extension/directory.go:9.62,11.25 2 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:11.25,13.3 1 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:14.2,16.25 3 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:16.25,20.3 3 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:21.2,24.3 1 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:27.61,28.25 1 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:28.25,30.49 2 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:30.49,32.4 1 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:33.3,34.40 2 0
+github.com/WhiCu/sif-go/tag/extension/directory.go:36.2,36.12 1 0
+github.com/WhiCu/sif-go/tag/extension/tagcon.go:12.51,17.2 1 1
+github.com/WhiCu/sif-go/tag/extension/tagcon.go:19.58,21.2 1 1
+github.com/WhiCu/sif-go/tag/extension/taginf.go:5.48,9.2 1 1
+github.com/WhiCu/sif-go/tag/extension/taginf.go:11.58,13.2 1 1
+github.com/WhiCu/sif-go/tag/extension/tagnum.go:5.48,11.2 2 1

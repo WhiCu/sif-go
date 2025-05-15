@@ -6,7 +6,10 @@ import (
 )
 
 const (
-	MaxLength = math.MaxInt32
+	MaxLength     = math.MaxInt32
+	SignatureSize = 1
+	LengthSize    = 4
+	TagHeaderSize = SignatureSize + LengthSize
 )
 
 var (
@@ -31,7 +34,6 @@ type Tag struct {
 //   - TypeSignature (4) - тип подписи тега типа.
 //
 // data - массив байтов, содержащий данные тега.
-// TODO: придумай как сделать это через интерфейс Reader
 func New(signature byte, data []byte) (tag *Tag, err error) {
 	lc := len(data)
 	if lc > MaxLength {
@@ -57,11 +59,11 @@ func MustNew(signature byte, data []byte) (tag *Tag) {
 
 // Bytes преобразует структуру Tag в массив байтов.
 func (t Tag) Bytes() []byte {
-	data := make([]byte, 1+4+int(t.Length))
+	data := make([]byte, TagHeaderSize+int(t.Length))
 	data[0] = t.Signature
 	lenBytes := Int32ToBytes(t.Length)
-	copy(data[1:5], lenBytes[:])
-	copy(data[5:], t.Data)
+	copy(data[SignatureSize:SignatureSize+LengthSize], lenBytes[:])
+	copy(data[TagHeaderSize:], t.Data)
 	return data
 }
 
@@ -73,6 +75,12 @@ func Int32ToBytes(i int32) [4]byte {
 		byte(i >> 8),
 		byte(i),
 	}
+}
+
+// Int32ToBytesSlice преобразует 32-битное целое число в слайс из 4 байтов.
+func Int32ToBytesSlice(i int32) []byte {
+	bytes := Int32ToBytes(i)
+	return bytes[:]
 }
 
 // BytesToInt32 преобразует массив из 4 байтов обратно в 32-битное целое число.

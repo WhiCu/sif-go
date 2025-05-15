@@ -1,17 +1,16 @@
 package tag
 
-import "math"
-
-// tagSingnature представляет тип подписи тега.
-type TagSingnature = byte
+import (
+	"errors"
+	"math"
+)
 
 const (
-	// ContentSignature используется для обозначения тега содержимого.
-	ContentSignature TagSingnature = 1 << iota
-	// InfoSignature используется для обозначения информационного тега.
-	InfoSignature
-	// typeSignature используется для обозначения тега типа.
-	TypeSignature
+	MaxLength = math.MaxInt32
+)
+
+var (
+	ErrDataTooLong = errors.New("data too long")
 )
 
 // Tag представляет структуру тега.
@@ -27,16 +26,27 @@ type Tag struct {
 // New создает новый объект Tag с указанными параметрами.
 //
 // signature - тип подписи тега. Он может быть одним из следующих:
-//  - ContentSignature (1) - тип подписи тега содержимого,
-//  - InfoSignature (2) - тип подписи информационного тега,
-//  - TypeSignature (4) - тип подписи тега типа.
+//   - ContentSignature (1) - тип подписи тега содержимого,
+//   - InfoSignature (2) - тип подписи информационного тега,
+//   - TypeSignature (4) - тип подписи тега типа.
 //
 // data - массив байтов, содержащий данные тега.
-func New(signature byte, data []byte) *Tag {
+// TODO: придумай как сделать это через интерфейс Reader
+func New(signature byte, data []byte) (tag *Tag, err error) {
+	lc := len(data)
+	if lc > MaxLength {
+		return nil, ErrDataTooLong
+	}
+	return &Tag{
+		Signature: signature,
+		Length:    int32(lc),
+		Data:      data,
+	}, nil
+}
+func MustNew(signature byte, data []byte) (tag *Tag) {
 	lc := len(data)
 	if lc > math.MaxInt32 {
-		//TODO: добавить обработку
-		panic("data too long")
+		panic(ErrDataTooLong)
 	}
 	return &Tag{
 		Signature: signature,
@@ -47,11 +57,11 @@ func New(signature byte, data []byte) *Tag {
 
 // Bytes преобразует структуру Tag в массив байтов.
 func (t Tag) Bytes() []byte {
-	data := make([]byte, 0)
-	data = append(data, t.Signature)
+	data := make([]byte, 1+4+int(t.Length))
+	data[0] = t.Signature
 	lenBytes := Int32ToBytes(t.Length)
-	data = append(data, lenBytes[:]...)
-	data = append(data, t.Data...)
+	copy(data[1:5], lenBytes[:])
+	copy(data[5:], t.Data)
 	return data
 }
 

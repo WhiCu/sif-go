@@ -6,6 +6,7 @@ import (
 
 	"github.com/WhiCu/sif-go/sif"
 	"github.com/WhiCu/sif-go/tag"
+	"github.com/WhiCu/sif-go/tag/extension"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,8 +14,8 @@ import (
 func TestNewSIF(t *testing.T) {
 	content := []byte("test content")
 	tags := []*tag.Tag{
-		tag.New(tag.ContentSignature, content),
-		tag.New(tag.InfoSignature, []byte("meta1")),
+		tag.MustNew(extension.ContentSignature, content),
+		tag.MustNew(extension.InfoSignature, []byte("meta1")),
 	}
 
 	s := sif.New(tags...)
@@ -28,8 +29,8 @@ func TestNewSIF(t *testing.T) {
 func TestSIFBytes(t *testing.T) {
 	content := []byte("data")
 	tags := []*tag.Tag{
-		tag.New(tag.InfoSignature, []byte("info")),
-		tag.New(tag.ContentSignature, content),
+		tag.MustNew(extension.InfoSignature, []byte("info")),
+		tag.MustNew(extension.ContentSignature, content),
 	}
 
 	s := sif.New(tags...)

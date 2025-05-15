@@ -1,6 +1,7 @@
 package decode
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"io"
@@ -14,18 +15,13 @@ var (
 	ErrInvalidHeader = errors.New("invalid header signature")
 )
 
-func UnmarshalReader(data io.Reader, s *sif.SIF) error {
-	d, err := io.ReadAll(data)
-	if err != nil {
-		return err
-	}
-	err = NewDecoder(bytes.NewReader(d)).Decode(s)
+func UnmarshalReader(data io.Reader, s *sif.SIF) (err error) {
+	err = NewDecoder(bufio.NewReader(data)).Decode(s)
 	return err
 }
 
-func Unmarshal(data []byte, s *sif.SIF) error {
-	err := NewDecoder(bytes.NewReader(data)).Decode(s)
-	return err
+func Unmarshal(data []byte, s *sif.SIF) (err error) {
+	return UnmarshalReader(bytes.NewReader(data), s)
 }
 
 func (d *Decoder) DecodeHeader() (h sif.Header, err error) {
@@ -67,10 +63,7 @@ func (d *Decoder) Decode(s *sif.SIF) (err error) {
 		return err
 	}
 	// Считываем данные
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(d.r); err != nil {
-		return err
-	}
+	buf := bufio.NewReader(d.r)
 	// Считываем теги
 	decoder := decode.NewDecoder(buf)
 	tags, err := decoder.DecodeAll()

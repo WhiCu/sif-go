@@ -25,9 +25,9 @@ func NewHeader(v byte, r [4]byte) Header {
 
 // Bytes преобразует заголовок в массив байтов.
 func (h Header) Bytes() []byte {
-	data := make([]byte, 0)
-	data = append(data, h.Signature[:]...)
-	data = append(data, h.Version)
-	data = append(data, h.Reserve[:]...)
+	data := make([]byte, 8)
+	copy(data[0:3], h.Signature[:])
+	data[3] = h.Version
+	copy(data[4:8], h.Reserve[:])
 	return data
 }

@@ -113,5 +113,100 @@ func NewNumberTag(num int32) *tag.Tag {
 		numBytes[:],
 	)
 }
+```
 
+## 📝 Примеры использования
+
+### Создание и запись SIF-файла
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/WhiCu/sif-go/sif"
+	"github.com/WhiCu/sif-go/tag/extension"
+)
+
+func main() {
+	// Создание тега с содержимым
+	content, err := extension.NewContentTagFromString("Hello, SIF!")
+	if err != nil {
+		log.Fatalf("Failed to create content tag: %v", err)
+	}
+
+	// Создание SIF-файла
+	sifFile := sif.New(content)
+
+	// Запись SIF-файла
+	file, err := os.OpenFile("./ground/example.sif", os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(sifFile.Bytes())
+	if err != nil {
+		log.Fatalf("Failed to write file: %v", err)
+	}
+
+	fmt.Println("SIF-файл успешно создан и записан.")
+}
+```
+
+### Чтение SIF-файла
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/WhiCu/sif-go/sif"
+	"github.com/WhiCu/sif-go/sif/decode"
+)
+
+func main() {
+	// Открытие SIF-файла
+	file, err := os.Open("./ground/example.sif")
+	if err != nil {
+		log.Fatalf("Failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	// Декодирование SIF-файла
+	sf := new(sif.SIF)
+	err = decode.UnmarshalReader(file, sf)
+	if err != nil {
+		log.Fatalf("Failed to unmarshal: %v", err)
+	}
+
+	// Вывод содержимого
+	fmt.Println("SIF-файл:", sf)
+	fmt.Println("Содержимое:", string(sf.Tags[0].Data))
+}
+```
+
+## 🏗️ Схема архитектуры
+
+```
+sif-go/
+├── cmd/
+│   └── main.go           # Точка входа приложения
+├── sif/
+│   ├── header.go         # Структура и логика заголовка SIF
+│   ├── sif.go            # Основная структура SIF
+│   └── decode/
+│       └── decode.go     # Логика декодирования SIF
+├── tag/
+│   ├── tag.go            # Структура и логика тегов
+│   └── extension/
+│       ├── signature.go  # Константы сигнатур тегов
+│       ├── tagcon.go     # Реализация тега содержимого
+│       └── taginf.go     # Реализация информационного тега
+└── ground/               # Папка для хранения SIF-файлов
+    └── password.sif      # Пример SIF-файла
 ```
